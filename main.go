@@ -1,10 +1,8 @@
-// api-gateway/main.go
 package main
 
 import (
 	"api-gateway/config"
 	"api-gateway/services"
-	"fmt"
 	"github.com/gorilla/mux"
 	"github.com/joho/godotenv"
 	"log"
@@ -12,38 +10,36 @@ import (
 	"os"
 )
 
-func main() {
-
-	// Check if environment variables are already set
-	if os.Getenv("DB_HOST") == "" ||
-		os.Getenv("DB_USER") == "" ||
-		os.Getenv("DB_PASSWORD") == "" ||
-		os.Getenv("DB_NAME") == "" ||
-		os.Getenv("DB_PORT") == "" ||
-		os.Getenv("DB_SSLMODE") == "" ||
-		os.Getenv("SERVICE_A_API_KEY") == "" {
-		// Load .env file if environment variables are not set
-		err := godotenv.Load()
-		if err != nil {
-			log.Fatalf("Error loading .env file")
+func loadEnv() {
+	required := []string{
+		"DB_HOST", "DB_USER", "DB_PASSWORD", "DB_NAME", "DB_PORT", "DB_SSLMODE", "SERVICE_A_API_KEY",
+	}
+	for _, key := range required {
+		if os.Getenv(key) == "" {
+			if err := godotenv.Load(); err != nil {
+				log.Fatalf("Error loading .env file")
+			}
+			break
 		}
 	}
+}
+
+func main() {
+	loadEnv()
 
 	db := config.GetDBInstance()
 	r := mux.NewRouter()
 
 	serviceA := config.GetServiceAKey()
-	// Group v1 endpoints
 	v1 := r.PathPrefix("/api/v1").Subrouter()
-
 	goong := v1.PathPrefix("/service-a").Subrouter()
 
-	// Route for Service A
-	goongController := services.NewAServiceApiController(db, serviceA)
+	goongController := services.NewServiceAController(db, serviceA)
 	goong.HandleFunc("/endpoint-1", goongController.EndPoint1).Methods("GET")
 	goong.HandleFunc("/endpoint-2", goongController.EndPoint2).Methods("GET")
 
-	// Start server
-	fmt.Sprint("Server is running on port 8081")
-	http.ListenAndServe(":8081", r)
+	log.Println("Server is running on port 8081")
+	if err := http.ListenAndServe(":8081", r); err != nil {
+		log.Fatalf("Server failed: %v", err)
+	}
 }

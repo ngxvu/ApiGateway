@@ -1,4 +1,4 @@
-![img_1.png](img_1.png)
+![img_1.png](flowchart.png)
 
 Simple API Gateway For Route Api From Third Party Service
 ==================================
@@ -73,7 +73,7 @@ The API Gateway is built using Golang Language and uses a PostgreSQL database to
 
 3. Create a `.env` file in the project root directory and add the following environment variables:
    ```bash
-    DB_USER=postgres
+   DB_USER=postgres
    DB_PASSWORD=postgres
    DB_NAME=api_gateway
    DB_HOST=localhost
@@ -97,4 +97,4 @@ The API Gateway will start running on http://localhost:8081.
    - GET /api/v1/service_a/endpoint-1
    - GET /api/v1/service_a/endpoint-2
    
-This is just an example of how to use the API Gateway. You can add more services and endpoints as needed.# 3rd-party-gateway
+This is just an example of how to use the API Gateway. You can add more services and endpoints as needed.
