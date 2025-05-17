@@ -1,24 +1,29 @@
-![img_1.png](flowchart.png)
+# Simple API Gateway For Route Api From Third Party Service 
 
-Simple API Gateway For Route Api From Third Party Service
-==================================
-## Description
-This is a simple API Gateway for routing API requests from a third-party service to a local service.
-It also converts the third-party API to a new API endpoint for the local service so that the local service can public API endpoints.
-The API Gateway is built using Golang Language and uses a PostgreSQL database to store logs of the API requests.
+[![Go Version](https://img.shields.io/badge/Go-1.23.1+-00ADD8?style=flat&logo=go)](https://go.dev/doc/install)
+[![Docker](https://img.shields.io/badge/Docker-latest-2496ED?style=flat&logo=docker&logoColor=white)](https://www.docker.com/)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-latest-336791?style=flat&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
+[![Postman](https://img.shields.io/badge/Postman-latest-FF6C37?style=flat&logo=postman&logoColor=white)](https://www.postman.com/)
+
+<p align="center">
+  <img src="flowchart.png" alt="Flowchart" width="800">
+</p>
+
+
+## Overview
+This project is a simple API Gateway written in Go, designed to route API requests from clients to a third-party service and log all requests/responses to a PostgreSQL database. It exposes new API endpoints for local use and provides a logging mechanism for all API interactions.
 
 ## Features
-- Client: Sends HTTP requests to the API Gateway.
-- API Gateway: Routes requests to either the third-party API or the local service.
-- Third-Party API: External service that the API Gateway interacts with (e.g., Goong API).
-- Database: PostgreSQL database used to store logs and other data.
+- Routes client requests to third-party APIs.
+- Logs all API requests and responses to PostgreSQL.
+- Easy configuration via environment variables.
 
 ## Project Layout
 ```
 3rd-party-gateway/
 ├── config/
-│   ├── postgres.go
 │   ├── api_key.go
+│   ├── postgres.go
 ├── database/
 │   ├── docker_compose.yml
 │   ├── logs.sql
@@ -29,72 +34,96 @@ The API Gateway is built using Golang Language and uses a PostgreSQL database to
 ├── services/
 │   ├── services_a.go
 ├── .env
-├── .gitignore
 ├── go.mod
 ├── main.go
 ├── README.md
 ```
 
-## Project Layout
-- `config/`: Contains configuration files for the project.
-- `config/postgres.go`: Contains configuration for the PostgreSQL database.
-- `config/api_key.go`: Contains API key configuration for the project.
-- `database/`: Contains database configuration files.
-- `database/docker_compose.yml`: Contains Docker Compose configuration for the PostgreSQL database.
-- `database/logs.sql`: Contains SQL queries for creating tables in the PostgreSQL database.
-- `middleware/`: Contains middleware functions for the project.
-- `middleware/proxies.go`: Contains proxy middleware functions for the project.
-- `models/`: Contains models for the project.
-- `models/models.go`: Contains models for the project.
-- `services/`: Contains services for the project.
-- `services/services_a.go`: Contains service_a functions for the project.
-- `.env`: Contains environment variables for the project.
-- `.gitignore`: Contains files and directories to ignore.
-- `go.mod`: Contains dependencies for the project.
-- `main.go`: Contains the main function for the project.
-- `README.md`: Contains information about the project.
+## Directory Structure
 
-## Requirement
-- Requires [Go](https://golang.org/dl/) v1.23+ to run.
-- Requires [Docker](https://docs.docker.com/get-docker/) v20.10.7+ to run.
-- Requires [Docker Compose](https://docs.docker.com/compose/install/) v1.29.2+ to run.
-- Requires [PostgreSQL](https://www.postgresql.org/download/) v13.3+ to run.
-- Requires [Postman](https://www.postman.com/downloads/) v8.10.0+ to run.
+- `config/`: Configuration files for the project.
+    - `config/postgres.go`: PostgreSQL database configuration.
+    - `config/api_key.go`: API key configuration.
+- `database/`: Database-related files.
+    - `database/docker-compose.yml`: Docker Compose configuration for PostgreSQL.
+    - `database/logs.sql`: SQL for creating tables in PostgreSQL.
+- `middleware/`: Middleware functions.
+    - `middleware/proxies.go`: Proxy middleware functions.
+- `models/`: Data models.
+    - `models/models.go`: Log model for storing API logs.
+- `services/`: Service logic.
+    - `services/services_a.go`: Service A functions.
+- `.env`: Environment variables.
+- `go.mod`: Go module dependencies.
+- `main.go`: Main entry point.
+- `README.md`: Project documentation.
 
-## Installation
-1. Clone the repository:
-   ```bash
-   git clone -b medium git@github.com:ngxvu/3rd-party-gateway
-    ```
-2. Change into the project directory:
-   ```bash
-   cd 3rd-party-gateway
-   ```
+## Requirements
 
-3. Create a `.env` file in the project root directory and add the following environment variables:
-   ```bash
-   DB_USER=postgres
-   DB_PASSWORD=postgres
-   DB_NAME=api_gateway
-   DB_HOST=localhost
-   DB_PORT=5432
-   PORT=8081
-    ```
-4. Start the PostgreSQL database using Docker Compose:  
-   ```bash
-   docker-compose -f database/docker_compose.yml up -d
-    ```
-5. Create the tables in the PostgreSQL database:
-   ```bash
-   psql -h localhost -U postgres -d api_gateway -a -f database/logs.sql
-    ```
-6. Run the following command to start the API Gateway:
-   ```bash
-   go run main.go
-   ```
-The API Gateway will start running on http://localhost:8081.  
-   7. You can now make requests to the API Gateway using the following endpoints:  
-   - GET /api/v1/service_a/endpoint-1
-   - GET /api/v1/service_a/endpoint-2
-   
-This is just an example of how to use the API Gateway. You can add more services and endpoints as needed.
+- [Go](https://golang.org/dl/) v1.23+
+- [Docker](https://docs.docker.com/get-docker/) v20.10.7+
+- [Docker Compose](https://docs.docker.com/compose/install/) v1.29.2+
+- [PostgreSQL](https://www.postgresql.org/download/) v13.3+ (Dockerized)
+- [Postman](https://www.postman.com/downloads/) v8.10.0+ (optional, for testing)
+
+## Installation & Setup
+
+#### 1. Clone the repository
+
+```
+git clone https://github.com/ngxvu/3rd-party-gateway.git
+cd 3rd-party-gateway
+```
+
+#### 2. Configure environment variables
+   Create a .env file in the project root:
+
+```
+DB_HOST=localhost
+DB_USER=postgres
+DB_PASSWORD=postgres
+DB_NAME=api-gateway
+DB_PORT=5433
+DB_SSLMODE=disable
+SERVICE_A_API_KEY=your_service_a_api_key
+```
+
+#### 3. Start PostgreSQL with Docker
+
+```
+docker-compose -f database/docker-compose.yml up -d
+```
+This will start a PostgreSQL instance on port 5433.
+
+#### 4. Create the logs table
+```
+docker exec -it <container_id> psql -U postgres -d api-gateway -f /var/lib/postgresql/data/logs.sql
+```
+Or from your host (if psql is installed):
+```
+psql -h localhost -U postgres -d api-gateway -p 5433 -f database/logs.sql
+```
+
+#### 5. Run the API Gateway
+
+```
+go run main.go
+```
+The server will start on http://localhost:8081.
+
+## Usage
+
+- GET /api/v1/service-a/endpoint-1
+- GET /api/v1/service-a/endpoint-2
+
+## Code Explanation
+
+- **main.go**: Loads environment variables, initializes the database, sets up HTTP routes, and starts the server.
+- **config/postgres.go**: Handles PostgreSQL connection using environment variables and GORM.
+- **config/api_key.go**: Loads the third-party API key from environment variables.
+- **middleware/proxies.go**: Proxies requests to the third-party API, appending the API key and query parameters.
+- **models/models.go**: Defines the Log model for storing API logs in PostgreSQL.
+- **services/service_a.go**: Contains the controller for handling API requests, proxying them, and logging the results.
+
+
+Replace `your_service_a_api_key` with your actual API key. This README provides all necessary steps and explanations for setup and usage.
